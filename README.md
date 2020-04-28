@@ -2,6 +2,14 @@
 
 An Arabic sentiment analysis based on Souq.com corpus. 
 
+
+
+![alt text](https://i.imgur.com/rjXKrb6.png "sh1")
+
+![alt text](https://i.imgur.com/HJmIK3V.png "sh1")
+
+![alt text](https://i.imgur.com/PbkFlHz.png "sh1")
+
 [Demo](https://agile-atoll-76273.herokuapp.com/) with explanation in Arabic.  
 
 ## How to run this
