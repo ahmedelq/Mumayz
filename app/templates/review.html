@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block styles %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/jqcloud.min.css') }}">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Amiri&display=swap');
+
+* {
+      direction: rtl;
+      
+
+    font-family: 'Amiri', serif;
+
+
+}
+.max-hight {
+    min-height: 80vh;
+    
+}
+.col {
+  text-align: center;
+  
+}
+
+.min50 {
+    max-width: 55vw;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+
+
+
+.progress .progress-bar {
+    direction:rtl;
+    animation-name: animateBar;
+    animation-iteration-count: 1;
+    animation-timing-function: ease-in;
+    animation-duration: 1s;
+}
+@keyframes animateBar {
+    0% {transform: translateX(100%);}
+    100% {transform: translateX(0);}
+}
+
+
+
+.comment {
+  min-height: 7em;
+  resize: none;
+  border-radius: 4px;
+}
+
+
+
+</style>
+{% endblock %}
+
+{% block scripts %}
+    {{super()}}
+    
+    <script>
+        var delay = (function(){
+            var timer = 0;
+            return function(callback, ms){
+            clearTimeout (timer);
+            timer = setTimeout(callback, ms);
+        };
+        })();
+
+        $('#write-review').keyup(function() {
+        delay(function(){
+            var content = $('#write-review').val();
+            var msg = document.getElementById('msg');
+            params = {"content": content};
+            makeAjax('{{url_for("main.make_pred") }}', params, function(data){
+                if(data.decision == 'NEG')
+                    msg.innerHTML = 'على الأرجح هذا النص سلبي ❌'
+                else if (data.decision == 'POS')
+                    msg.innerHTML = 'على الأرجح هذا النص إيجابي ✅'
+                else if (data.decision == 'NET')
+                    msg.innerHTML = 'على الأرجح هذا النص معتدل 😶'
+                else 
+                    msg.innerHTML = 'لا أستطيع التحديد 🤷‍♂️'
+                   
+                loadStat(data);
+            });
+
+        }, 1000 );
+        });
+    
+
+        function loadStat(data){
+            document.getElementById('lrpbar').style.width = Math.ceil(data.logreg) + "%";
+            document.getElementById('lrratio').innerHTML = data.logreg + "%";
+
+            document.getElementById('lrtpbar').style.width = Math.ceil(data.logregtfid) + "%";
+            document.getElementById('lrtratio').innerHTML = data.logregtfid + "%";
+
+            document.getElementById('nbpbar').style.width = Math.ceil(data.mnb) + "%";
+            document.getElementById('nbratio').innerHTML = data.mnb + "%";
+          
+            document.getElementById('rfpbar').style.width = Math.ceil(data.rf) + "%";
+            document.getElementById('rfratio').innerHTML = data.rf + "%";
+
+            document.getElementById('svmpbar').style.width = Math.ceil(data.svm) + "%";
+            document.getElementById('svmratio').innerHTML = data.svm + "%";
+
+            document.getElementById('totalpbar').style.width = Math.ceil(data.total) + "%";
+            document.getElementById('totalratio').innerHTML = data.total + "%";
+        }
+   
+
+
+        
+
+
+
+    
+  
+
+    </script>
+
+
+
+  
+{% endblock %}
+
+{% block payload %}
+<div class="card shadow mb-4 min50">
+        <textarea id="write-review" class="form-control comment" placeholder="هذا المنتج رائع جداً وأنصح يه ساعدني كثيرا شكراً لكم..."></textarea>                    
+        <div class="card-body">
+            <div  style="direction: rtl; text-align:right;"> <p id="msg" style="direction: rtl;" >لا أستطيع تحديد العاطفة حيال هذا النص</p></div>
+            
+            <div class="row" >
+            <div class="col-sm-2" style="direction:ltr;"> <span id="lrratio" >0%</span>  <span style="direction:ltr;">LogReg-ohe</span>     </div>
+            <div id="barConcole" style="direction: rtl;" class="col">
+                
+                <div id="bar" class="progress mb-4" style="height: 30px; direction: rtl;">
+                        <div id="lrpbar" class="progress-bar bg-success" style="direction: rtl;"
+                        role="progressbar" 
+                        aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="1">
+                        <span style="text-align: left; vertical-align: baseline; font-size: 1.4em;"> 👍</span>
+                    </div>
+                </div></div></div>
+            
+            <div class="row" >
+            <div class="col-sm-2" style="direction:ltr;"><span id="lrtratio" >0%</span>  <span>LogReg-tfidf</span>     </div>
+            <div id="barConcole" style="direction: rtl;" class="col">
+                
+                <div id="bar" class="progress mb-4" style="height: 30px; direction: rtl;">
+                        <div id="lrtpbar" class="progress-bar bg-success" style="direction: rtl;"
+                        role="progressbar" 
+                        aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="1">
+                        <span style="text-align: left; vertical-align: baseline; font-size: 1.4em;"> 👍</span>
+                    </div>
+                </div></div></div>
+        
+            <div class="row" >
+            <div class="col-sm-2" style="direction:ltr;"><span id="svmratio" >0%</span>  <span>SVM</span>     </div>
+            <div id="barConcole" style="direction: rtl;" class="col">
+                
+                <div id="bar" class="progress mb-4" style="height: 30px; direction: rtl;">
+                        <div id="svmpbar" class="progress-bar bg-success" style="direction: rtl;"
+                        role="progressbar" 
+                        aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="1">
+                        <span style="text-align: left; vertical-align: baseline; font-size: 1.4em;"> 👍</span>
+                    </div>
+            </div></div></div>
+
+            <div class="row" >
+            <div class="col-sm-2" style="direction:ltr;"> <span id="nbratio" >0%</span>   <span>NB</span>    </div>
+            <div id="barConcole" style="direction: rtl;" class="col">
+                
+                <div id="bar" class="progress mb-4" style="height: 30px; direction: rtl;">
+                        <div id="nbpbar" class="progress-bar bg-success" style="direction: rtl;"
+                        role="progressbar" 
+                        aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="1">
+                        <span style="text-align: left; vertical-align: baseline; font-size: 1.4em;"> 👍</span>
+                    </div>
+            </div></div></div>
+
+            <div class="row" >
+            <div class="col-sm-2" style="direction:ltr;"> <span id="rfratio" style="direction:rtl;">0%</span>  <span style="direction:rtl;">RFT</span>     </div>
+            <div id="barConcole" style="direction: rtl;" class="col">
+                
+                <div id="bar" class="progress mb-4" style="height: 30px; direction: rtl;">
+                        <div id="rfpbar" class="progress-bar bg-success" style="direction: rtl;"
+                        role="progressbar" 
+                        aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="1">
+                        <span style="text-align: left; vertical-align: baseline; font-size: 1.4em;"> 👍</span>
+                    </div>
+            </div></div></div>
+
+            <div class="row" >
+            <div class="col-sm-2" style="direction:ltr;"> <span id="totalratio" style="direction:rtl;">0%</span>  <span style="direction:rtl;">Total AVG</span>     </div>
+            <div id="barConcole" style="direction: rtl;" class="col">
+                
+                <div id="bar" class="progress mb-4" style="height: 30px; direction: rtl;">
+                        <div id="totalpbar" class="progress-bar bg-success" style="direction: rtl;"
+                        role="progressbar" 
+                        aria-valuenow="0"
+                        aria-valuemin="0" aria-valuemax="1">
+                        <span style="text-align: left; vertical-align: baseline; font-size: 1.4em;"> 👍</span>
+                    </div>
+            </div></div></div>
+
+      </div>
+</div>
+      <div class="container" style="margin-bottom: 20px;">
+        <div class="row min50">
+            
+    
+
+    </div>
+        <div class="container" style="max-height:300px; text-align:right; color:black;   overflow-y: scroll;">
+<title>مشروع مميز</title></head>
+<body><h1>مشروع مميز</h1>
+<p>تحت إشراف د. حسني المحتسب</p>
+<p>عمل فريق عشتار: أحمد العلق، مرتضى العوامي، عبدالله خياط.</p>
+<p> جامعة الملك فهد للبترول والمعادن، الظهران. </p>
+<p>الفصل الدراسي 192</p>
+<p>رمضان/أبريل 2020م </p>
+<p>&nbsp;</p>
+<h2>مقدمة</h2>
+<p>في بعض المتاجر الإلكترونية، يستطيع الزبائن كتابة تجاربهم بعد المنتج، واختزالها بمقياس (مثلاً برقم من 1 إلى 5). هذه الأرقام قد لا تعكس بالضرورة التجربة الحقيقة المكتوبة لدى الزبون؛ إما وضعت عن طريق الخطأ أو لسوء تقديره. وأيضاً هنالك الكثير من مواقع التسوق التي لا توفر خيار التقييم المعياري. يهدف مشروعنا هذا لإظهار عاطفة الزبون بناءً على التقييم المكتوب، وتصنيفه إما إيجابي أو سلبي أو معتدل. ويمكن تقسيمه على 3 مراحل: جمع البيانات من موقع سوق.كوم وفرزها وتصنيفها (إيجابي، سلبي)، وتدريب نماذج (شعاع الدعم الآلي، الانحدار الخطي، ناييڤ بايس)، وتقييمها لاختيار الأفضل. </p>
+<h2>جمع البيانات</h2>
+<p>للتدريب قمنا بجمع 1012 تقييم، منها 288 سلبي و 724 إيجابي، ولاختبار التدريب جمعنا 120 تقييم إيجابي و 47 تقييم سلبي، أي في الإجمال لدينا 1179 تقييم من أقسام منوعة (إلكترونيات، أدوات منزلية، العناية الشخصية،...) جميعها من موقع سوق كوم (انظر المرفقات). أحد الصعوبات التي واجهتنا خلال هذه العملية هو شح وقلة تنوع التقييمات السلبية إما لأن الموقع لا يود ضخ كميات كبيرة للمحافظة على سمعته، أو لأن المنتجات أساساً جيدة، أو لأن الناس لا تكتب عن تجاربها السيئة. بعد الانتهاء من جمع هذه البيانات تم تصنيفها يدوياً إما إيجابي (رمزنا له بـP) أو سلبي (رمزنا له بـN). </p>
+<p>&nbsp;</p>
+<h2>تدريب النماذج</h2>
+<p>في هذه المرحلة قمنا بتجارب عدة على النماذج، مثلاً في نموذج الانحدار الخطي جربنا تدريب البيانات مباشرة دون أي معالجة، كان النموذج يميل أكثر للتقييم الإيجابي،  قيمة الـf1-score للتقييم السلبي 0.79، واستدعاء 0.70 بينما الإيجابي 0.93 وضبط 0.89. بعد عدة تجارب وتأملات كان القرار في استخدام مُجذع <em>تاشفين</em>، وهو حل مناسب لتوحيد الكلمات المتشابهة مثل: ممتاز وممتازة دون الإخلال بالمعنى الوظيفي. وبالفعل أعطى نتائج إيجابية:  قيمة الـf1-score للتقييم السلبي 0.86، واستدعاء 0.83، بينما الـf1-score  الإيجابي 0.95. وضبط النموذج العام 0.92. تفسير النتائج كان غير مرضي؛ فبعد التأمل في الكلمات (التوكنز) ليست جميعها كانت مفهومة فقد هضمها المجذع كونه غير دقيق فكان حل آخر هو إضافتها على النص الأصلي وإزالة المكرر. وأيضاً اتضحت كلمات كان يجب أن لا تتواجد مثل: من، إلى، على،... كان يجب أن يُتصرف معها بإنشاء دالة لإزالتها وإزالة الحركات وتوحيد الألفات (أ، إ، آ) لتصبح ا، و (ؤ) لتصبح و. كانت هذه التجربة أكثرهم نجاحاً: حقق النموذج ضبط عام 0.93، و قيمة الـf1-score للتقييم السلبي 0.86، واستدعاء 0.81، بينما الـf1-score  الإيجابي 0.95. وهو ما اختير في النهاية كأفضل نموذج. </p>
+<p>&nbsp;</p>
+<h2>اللغات الأدوات المستخدمة</h2>
+<ol>
+<li><p><strong>بايثون</strong> </p>
+<ol>
+<li>مكتبات تعلم الآلة: sklearn و pandas. </li>
+<li>مكتبة ويب: flask.</li>
+
+</ol>
+</li>
+<li><p>مكتبة bootstrap وjquery للواجهة الأمامية لموقع الويب. </p>
+</li>
+<li><p>جافاسكريبت**: الواجهة الأمامية لموقع الويب، وتصميم الإضافة المترقبة.</p>
+</li>
+<li><p><strong>قيت</strong>: التحكم ومشاركة النص المصدري.</p>
+</li>
+
+</ol>
+<p>&nbsp;</p>
+<h2>التعلم من الأخطاء</h2>
+<ol>
+<li><strong>إضافة تصنيف معتدل</strong>: كانت فرضيتنا أن نأخذ نسبة التنبؤ الذي يعطيه النموذج، وإن كانت حول الـ50% بالمئة فسيصنف النص كمعتدل. ولكن لم تؤتي هذه الفرضية ثمارها؛ كوننا مثلنا خواص النموذج بحقيبة كلمات ليس لترتيبها أي أهمية. </li>
+<li><strong>الموازنة بين التقاييم الإيجابية والسلبية</strong>: وقد برزت لنا هذه المشكلة حينما كنا نجري عملية تقييم النماذج في إحصائيات الدقة والاستدعاء، حيث توافق النموذج أكثر باتجاه التقاييم الإيجابية. وحل هذه المشكلة كامن بطبيعتها؛ في جمع عدد أكبر من  التقييمات السلبية والتي هي  أصلاً  مُتحكم بها من قبل إدارة الموقع.  </li>
+<li><strong>جمع بيانات من أكثر من صنف</strong>: لاحظنا بعض التعارض في التقييمات، مثلاً في الأجهزة الحاسوبية يعتبر تقييم &quot;يسخن بسرعة&quot; سلبي بينما في  بعض أجهزة الأدوات المنزلي كجهاز إعداد القهوة تعتبر إيجابية، كمشروع تعليمي كان من الأفضل أن نجمع من مصدر واحد فقط مثلاً الأجهزة الحاسوبية. </li>
+
+</ol>
+<p>&nbsp;</p>
+<h2>استنتاج</h2>
+<p>بناءً على النتائج يتضح لنا أن أفضل نموذج هو نموذج الانحدار الخطي. وبعد تجارب عدة نوصي باستخدام مُجذع للنصوص حيث أن استخدامها أعطى نتائج إيجابية أكثر من نظيرتها الخام لأنها وسيلة فعالة لتوحيد المدلولات في التقييمات وإزالة كلمات التوقف لتقليل الأخطاء. أيضاً الموازنة والتنويع بين أعداد التقاييم الإيجابية والسلبية. </p>        </div>
+            
+{% endblock %}
+

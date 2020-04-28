@@ -1,0 +1,68 @@
+{% extends 'base_struc.html' %}
+{% block title %}
+مشروع مميز
+{% endblock %}
+  {% block body_attribs %}{% endblock %}
+{% block content %}
+
+  <!-- Page Wrapper -->
+  <div id="wrapper">
+
+    
+
+    <!-- Start of Top Page -->
+  
+    <!-- Content Wrapper -->
+    <div id="content-wrapper" class="d-flex flex-column">
+
+      <!-- Main Content -->
+      <div id="content">
+
+        <!-- Topbar -->
+        {% block topbar %}
+        <!-- End of Topbar -->
+        {% endblock %}
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            
+            <h1 class="h3 mb-0 text-gray-800" id="page-top">{{ heading }}</h1>
+
+          </div>
+
+          <!-- Start Main Content  -->
+            {% block payload %} {% endblock %}            
+          <!-- End Main Content -->
+
+          
+
+          
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+
+      <!-- Footer -->
+      <footer class="sticky-footer bg-white">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>تم في رمضان 1441هـ</span>
+          </div>
+        </div>
+      </footer>
+      <!-- End of Footer -->
+
+    </div>
+    <!-- End of Content Wrapper -->
+ 
+  </div>
+  <!-- End of Page Wrapper -->
+
+  <!-- Scroll to Top Button-->
+  
+
+  
+{% endblock %}
