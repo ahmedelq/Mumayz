@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 .vscode 
+=======
+>>>>>>> 5b66ef4c6324afcfd3f059e792ef710798802e28
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+<<<<<<< HEAD
+=======
+
+>>>>>>> 5b66ef4c6324afcfd3f059e792ef710798802e28
 # C extensions
 *.so
 
